@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AvatarSystem : MonoBehaviour {
 
-    public static AvatarSystem _instance;
+    private static AvatarSystem _instance;
 
     private Transform girlSourceTrans;
     private GameObject grilTarget;//女孩模型骨架
@@ -19,7 +19,7 @@ public class AvatarSystem : MonoBehaviour {
 
     private Transform boySourceTrans;
     private GameObject boyTarget;//男孩模型骨架
- 
+    private int sexFlag = 0;//性别标志位,0：女，1：男,默认为0
 
     Transform[] boyHips;//各个骨骼组成部分
     Dictionary<string, Dictionary<string, SkinnedMeshRenderer>> boyData = new Dictionary<string, Dictionary<string, SkinnedMeshRenderer>>();
@@ -31,7 +31,7 @@ public class AvatarSystem : MonoBehaviour {
     {
         _instance = this;
     }
-    public AvatarSystem GetInstance()
+    public static AvatarSystem GetInstance()
     {
         return _instance;
     }
@@ -117,13 +117,30 @@ public class AvatarSystem : MonoBehaviour {
         modelSkm[part].bones = bones.ToArray();
         modelSkm[part].sharedMesh = skm.sharedMesh;
     }
+    /// <summary>
+    /// 初始化两个角色模型
+    /// </summary>
     void InitAvatar() {
         int length = modelInitStr.GetLength(0);//获取二维数组的行数
         for (int i = 0; i < length; i++) {
             ChangeMesh(modelInitStr[i,0], modelInitStr[i,1],girlHips,girlData,girlSmr);
             ChangeMesh(modelInitStr[i, 0], modelInitStr[i, 1], boyHips, boyData, boySmr);
         }
-
+    }
+    /// <summary>
+    /// 用于外部接口调用
+    /// </summary>
+    /// <param name="part">换装部分名称</param>
+    /// <param name="num">部位编号</param>
+    public void ChangeClothes(string part,string num) {
+        if (sexFlag == 0)//女生
+        {
+            ChangeMesh(part, num, girlHips, girlData, girlSmr);
+        }
+        else if(sexFlag == 1)//男生
+        {
+            ChangeMesh(part, num, boyHips, boyData, boySmr);
+        }
     }
     
 } 
